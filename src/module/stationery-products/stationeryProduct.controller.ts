@@ -79,7 +79,7 @@ const getProduct = async (req : Request  , res: Response) =>{
 
      
     } catch (error) {
-        res.status(200).json({
+        res.status(400).json({
             message: 'Something went wrong',
             success: true,
             error
@@ -98,7 +98,7 @@ const getSpecifProduct = async (req : Request  , res: Response) =>{
             data: result,
           });
     } catch (error) {
-        res.status(200).json({
+        res.status(400).json({
             message: 'Something went wrong',
             success: true,
             error
@@ -132,7 +132,7 @@ const updateProduct = async (req : Request  , res: Response) =>{
         }
         
     } catch (error) {
-        res.status(200).json({
+        res.status(400).json({
             message: 'Something went wrong',
             success: true,
             error
@@ -140,9 +140,34 @@ const updateProduct = async (req : Request  , res: Response) =>{
     }
 }
 
+
+// delete product
+// get specif product
+const deleteProduct = async (req : Request  , res: Response) =>{
+  try {
+      const {productId} = req.params;
+      await StationeryProductServices.deleteProductFromDB(productId);
+      res.status(200).json({
+          message: 'Product deleted successfully',
+          success: true,
+          data: {},
+        });
+  } catch (error) {
+      res.status(400).json({
+          message: 'Something went wrong',
+          success: true,
+          error
+        });
+  }
+}
+
+
+
+
 export const StationeryProductControllers = {
   createProduct,
   getSpecifProduct,
   getProduct,
-  updateProduct
+  updateProduct,
+  deleteProduct
 };

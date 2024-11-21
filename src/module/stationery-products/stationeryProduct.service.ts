@@ -38,9 +38,16 @@ const updateProductFromDB = async (id : string , data : TStationeryProduct) => {
     return result;
 };
 
+// specif product delete
+const deleteProductFromDB = async (id : string) => {
+  const result = await StationeryProductModel.findByIdAndDelete(id);
+  return result;
+};
+
 export const StationeryProductServices = {
   createProductIntoDB,
   getProductFromDB,
   getSpecifProductFromDB,
-  updateProductFromDB
+  updateProductFromDB,
+  deleteProductFromDB
 };
