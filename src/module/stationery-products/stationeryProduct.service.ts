@@ -30,8 +30,17 @@ const getSpecifProductFromDB = async (id : string) => {
   return result;
 };
 
+// product update
+const updateProductFromDB = async (id : string , data : TStationeryProduct) => {
+    const result = await StationeryProductModel.findByIdAndUpdate(id ,data,{
+      new : true
+    });
+    return result;
+};
+
 export const StationeryProductServices = {
   createProductIntoDB,
   getProductFromDB,
-  getSpecifProductFromDB
+  getSpecifProductFromDB,
+  updateProductFromDB
 };

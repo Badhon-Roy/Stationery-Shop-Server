@@ -106,8 +106,43 @@ const getSpecifProduct = async (req : Request  , res: Response) =>{
     }
 }
 
+
+// update product
+const updateProduct = async (req : Request  , res: Response) =>{
+    try {
+        const {productId} = req.params;
+        const data = req.body;
+        if(data?.price < 0 || data?.quantity < 0 ){
+          res.status(400).json({
+            ...(data.price < 0 && {message : `${data?.price} is a negative number. Price must be a positive number.`}),
+            ...(data.quantity < 0 && {message : `${data?.quantity} is a negative number. Quantity must be a positive number.`}),
+            success: false,
+            data : {
+              ...(data.price < 0 && {price : data.price}),
+              ...(data.quantity < 0 && {quantity : data.quantity}),
+            }
+          });
+        }else{
+          const result = await StationeryProductServices.updateProductFromDB(productId, data);
+        res.status(200).json({
+            message: 'Product updated successfully',
+            success: true,
+            data: result,
+          });
+        }
+        
+    } catch (error) {
+        res.status(200).json({
+            message: 'Something went wrong',
+            success: true,
+            error
+          });
+    }
+}
+
 export const StationeryProductControllers = {
   createProduct,
   getSpecifProduct,
   getProduct,
+  updateProduct
 };
