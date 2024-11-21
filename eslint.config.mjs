@@ -14,8 +14,10 @@ export default [
     ignores: ["node_modules", "dist"],
     rules: {
       "no-unused-vars": "error",
+      'no-unused-expressions': 'error',
       "no-undef": "error",
       "prefer-const": "error",
+      '@typescript-eslint/no-require-imports': 'error',
       "no-console": "warn"  
     },
   },
