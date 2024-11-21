@@ -1,8 +1,8 @@
-import { Router } from "express"
-import { StationeryProductControllers } from "./stationeryProduct.controller";
+import { Router } from 'express';
+import { StationeryProductControllers } from './stationeryProduct.controller';
 
 const stationeryProductRouter = Router();
 
-stationeryProductRouter.post('/' , StationeryProductControllers.createProduct)
+stationeryProductRouter.post('/', StationeryProductControllers.createProduct);
 
 export default stationeryProductRouter;
