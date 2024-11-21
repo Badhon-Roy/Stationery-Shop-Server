@@ -1,8 +1,8 @@
-import { ObjectId } from "mongoose";
+import mongoose from 'mongoose';
 
 export type TOrder = {
-    email: string;
-    product: ObjectId;
-    quantity: number; 
-    totalPrice: number; 
-}
+  email: string;
+  product: mongoose.Types.ObjectId;
+  quantity: number;
+  totalPrice: number;
+};
