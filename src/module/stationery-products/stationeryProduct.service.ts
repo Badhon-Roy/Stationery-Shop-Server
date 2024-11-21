@@ -8,12 +8,30 @@ const createProductIntoDB = async (product: TStationeryProduct) => {
 };
 
 // all product get
-const getProductFromDB = async () => {
-  const result = await StationeryProductModel.find();
+const getProductFromDB = async (searchTerm : string | undefined ) => {
+   const query : Record<string , unknown> = {};
+   if(searchTerm){
+    Object.assign(query,{
+        $or : [
+            {name : {$regex : searchTerm , $options : "i"}},
+            {brand : {$regex : searchTerm , $options : "i"}},
+            {category : {$regex : searchTerm , $options : "i"}},
+        ]
+    })
+   }
+   const result = await StationeryProductModel.find(query)
+   return result
+};
+
+
+// specif product get
+const getSpecifProductFromDB = async (id : string) => {
+  const result = await StationeryProductModel.findById(id);
   return result;
 };
 
 export const StationeryProductServices = {
   createProductIntoDB,
-  getProductFromDB
+  getProductFromDB,
+  getSpecifProductFromDB
 };

@@ -64,9 +64,34 @@ const createProduct = async (req: Request, res: Response) => {
   }
 };
 
+
+
+// get all products
 const getProduct = async (req : Request  , res: Response) =>{
     try {
-        const result = await StationeryProductServices.getProductFromDB();
+        const searchTerm = req.query.searchTerm as string | undefined;
+        const result = await StationeryProductServices.getProductFromDB(searchTerm)
+        res.status(200).json({
+            message: 'Products retrieved successfully',
+            success: true,
+            data: result,
+          });
+
+     
+    } catch (error) {
+        res.status(200).json({
+            message: 'Something went wrong',
+            success: true,
+            error
+          });
+    }
+}
+
+// get specif product
+const getSpecifProduct = async (req : Request  , res: Response) =>{
+    try {
+        const {productId} = req.params;
+        const result = await StationeryProductServices.getSpecifProductFromDB(productId);
         res.status(200).json({
             message: 'Products retrieved successfully',
             success: true,
@@ -83,5 +108,6 @@ const getProduct = async (req : Request  , res: Response) =>{
 
 export const StationeryProductControllers = {
   createProduct,
-  getProduct
+  getSpecifProduct,
+  getProduct,
 };
