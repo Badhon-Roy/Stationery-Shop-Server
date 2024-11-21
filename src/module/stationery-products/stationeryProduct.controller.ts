@@ -64,6 +64,24 @@ const createProduct = async (req: Request, res: Response) => {
   }
 };
 
+const getProduct = async (req : Request  , res: Response) =>{
+    try {
+        const result = await StationeryProductServices.getProductFromDB();
+        res.status(200).json({
+            message: 'Products retrieved successfully',
+            success: true,
+            data: result,
+          });
+    } catch (error) {
+        res.status(200).json({
+            message: 'Something went wrong',
+            success: true,
+            error
+          });
+    }
+}
+
 export const StationeryProductControllers = {
   createProduct,
+  getProduct
 };
