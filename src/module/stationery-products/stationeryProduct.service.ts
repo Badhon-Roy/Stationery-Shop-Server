@@ -8,46 +8,44 @@ const createProductIntoDB = async (product: TStationeryProduct) => {
 };
 
 // all product get
-const getProductFromDB = async (searchTerm : string | undefined ) => {
-   const query : Record<string , unknown> = {};
-   if(searchTerm){
-    Object.assign(query,{
-        $or : [
-            {name : {$regex : searchTerm , $options : "i"}},
-            {brand : {$regex : searchTerm , $options : "i"}},
-            {category : {$regex : searchTerm , $options : "i"}},
-        ]
-    })
-   }
-   const result = await StationeryProductModel.find(query)
-   return result
+const getProductFromDB = async (searchTerm: string | undefined) => {
+  const query: Record<string, unknown> = {};
+  if (searchTerm) {
+    Object.assign(query, {
+      $or: [
+        { name: { $regex: searchTerm, $options: 'i' } },
+        { brand: { $regex: searchTerm, $options: 'i' } },
+        { category: { $regex: searchTerm, $options: 'i' } },
+      ],
+    });
+  }
+  const result = await StationeryProductModel.find(query);
+  return result;
 };
 
-
 // specif product get
-const getSpecifProductFromDB = async (id : string) => {
+const getSpecifProductFromDB = async (id: string) => {
   const result = await StationeryProductModel.findById(id);
   return result;
 };
 
 // product update
-const updateProductFromDB = async (id : string , data : TStationeryProduct) => {
-    const result = await StationeryProductModel.findByIdAndUpdate(id ,data,{
-      new : true
-    });
-    return result;
-};
-
-// specif product delete
-const deleteProductFromDB = async (id : string) => {
-  const result = await StationeryProductModel.findByIdAndDelete(id);
+const updateProductFromDB = async (id: string, data: TStationeryProduct) => {
+  const result = await StationeryProductModel.findByIdAndUpdate(id, data, {
+    new: true,
+  });
   return result;
 };
 
+// specif product delete
+const deleteProductFromDB = async (id: string) => {
+  const result = await StationeryProductModel.findByIdAndDelete(id);
+  return result;
+};
 export const StationeryProductServices = {
   createProductIntoDB,
   getProductFromDB,
   getSpecifProductFromDB,
   updateProductFromDB,
-  deleteProductFromDB
+  deleteProductFromDB,
 };

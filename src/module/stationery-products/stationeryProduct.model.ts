@@ -5,10 +5,12 @@ const stationeryProductSchema = new Schema<TStationeryProduct>({
   name: {
     type: String,
     required: [true, 'Product name is required'],
+    trim : true
   },
   brand: {
     type: String,
     required: [true, 'Brand name is required'],
+    trim : true
   },
   price: {
     type: Number,
@@ -43,10 +45,12 @@ const stationeryProductSchema = new Schema<TStationeryProduct>({
     type: Boolean,
     default: true,
   },
+},{
+  timestamps: true,
 });
 
 const StationeryProductModel = model<TStationeryProduct>(
-  'StationeryProducts',
+  'StationeryProduct',
   stationeryProductSchema,
 );
 export default StationeryProductModel;
