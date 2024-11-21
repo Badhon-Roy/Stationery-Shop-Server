@@ -27,13 +27,50 @@ const updateProductStock = async (productId: string, quantity: number) => {
   await product.save();
 };
 
-// //Calculate Revenue from Orders
-// const calculateRevenueFromAllOrders = async()=>{
+//Calculate Revenue from Orders
+const calculateRevenueFromAllOrders = async () => {
+  const revenue = await OrderModel.aggregate([
+    // stage-1
+    {
+      $lookup: {
+        from: 'stationeryproducts',
+        localField: 'product',
+        foreignField: '_id',
+        as: 'productDetails',
+      },
+    },
+    // stage-2
+    {
+      $unwind: '$productDetails',
+    },
+    // stage-3
+    {
+      $project: {
+        totalPrice: { $multiply: ['$productDetails.price', '$quantity'] },
+      },
+    },
+    //stage-4
+    {
+      $group: {
+        _id: null,
+        totalRevenue: { $sum: '$totalPrice' },
+      },
+    },
+    // stage-5
+    {
+      $project: {
+        _id: 0,
+        totalRevenue: 1,
+      },
+    },
+  ]);
 
-// }
+  return revenue.length > 0 ? revenue[0].totalRevenue : 0;
+};
 
 export const OrderServices = {
   createOrderIntoDB,
   updateProductStock,
   getOrderFromDB,
+  calculateRevenueFromAllOrders,
 };

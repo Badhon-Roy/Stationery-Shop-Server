@@ -53,7 +53,7 @@ const stationeryProductSchema = new Schema<TStationeryProduct>(
 );
 
 const StationeryProductModel = model<TStationeryProduct>(
-  'StationeryProduct',
+  'StationeryProducts',
   stationeryProductSchema,
 );
 export default StationeryProductModel;

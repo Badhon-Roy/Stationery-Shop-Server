@@ -80,20 +80,33 @@ const getOrder = async (req: Request, res: Response) => {
   }
 };
 
-// // Calculate Revenue from Orders
-// const calculateRevenue = async(req : Request, res: Response)=>{
-//     try {
-//         const result = await
-//     } catch (error) {
-//         res.status(400).json({
-//             message: "Something went wrong",
-//             status: false,
-//             error
-//         })
-//     }
-// }
+// Calculate Revenue from Orders
+const calculateRevenue = async (req: Request, res: Response) => {
+  try {
+    const totalRevenue = await OrderServices.calculateRevenueFromAllOrders();
+    if (totalRevenue === 0) {
+      res.status(404).json({
+        message: 'No orders found',
+        status: false,
+      });
+      return;
+    }
+    res.status(200).json({
+      message: 'Revenue calculated successfully',
+      status: true,
+      data: totalRevenue,
+    });
+  } catch (error) {
+    res.status(400).json({
+      message: 'Something went wrong',
+      status: false,
+      error,
+    });
+  }
+};
 
 export const OrderControllers = {
   createOrder,
   getOrder,
+  calculateRevenue,
 };
