@@ -5,7 +5,7 @@ import StationeryProductModel from '../stationery-products/stationeryProduct.mod
 // order create
 const createOrder = async (req: Request, res: Response) => {
   try {
-    const { email, product, quantity } = req.body.order;
+    const { email, product, quantity } = req.body;
 
     //------------------
     const productDetails = await StationeryProductModel.findById(product);
@@ -94,7 +94,9 @@ const calculateRevenue = async (req: Request, res: Response) => {
     res.status(200).json({
       message: 'Revenue calculated successfully',
       status: true,
-      data: totalRevenue,
+      data: {
+        totalRevenue: totalRevenue,
+      },
     });
   } catch (error) {
     res.status(400).json({

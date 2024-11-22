@@ -20,6 +20,9 @@ const getProductFromDB = async (searchTerm: string | undefined) => {
     });
   }
   const result = await StationeryProductModel.find(query);
+  if (!result.length) {
+    throw new Error('Product not found!');
+  }
   return result;
 };
 

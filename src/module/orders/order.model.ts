@@ -23,7 +23,6 @@ const orderSchema = new Schema<TOrder>(
       type: Number,
       required: [true, 'Total price is required'],
       min: [0, 'Total price must be a non-negative number'],
-      default: 0,
     },
   },
   {
