@@ -1,8 +1,19 @@
-# Stationery Shop Express Application (with TypeScript and MongoDB)
+# 📚 Stationery Shop - Express + MongoDB + TypeScript
 
-This project is a Stationery Shop application built with **Express.js**, **MongoDB**, and **TypeScript**. The application manages stationery products and customer orders. The project includes various functionalities like creating, updating, and deleting products, placing orders, and calculating total revenue.
+Welcome to the **Stationery Shop**, a feature-rich platform designed for managing stationery products and customer orders with ease. Built using **TypeScript**, **Express.js**, and **MongoDB**, this application offers efficient tools for product management, order processing, and revenue tracking.
 
-## Features
+
+---
+
+## 🌐 Live URL
+
+[**Stationery Shop**](https://stationery-shop-blond.vercel.app)  
+_Experience the application live._
+
+---
+
+
+## ✨ Features
 
 - **Stationery Products Management:**
   - Create, Read, Update, and Delete products.
@@ -17,7 +28,7 @@ This project is a Stationery Shop application built with **Express.js**, **Mongo
 - **Revenue Calculation:**
   - Aggregate total revenue from all orders using MongoDB aggregation.
 
-## Technologies Used
+## 🛠 Technologies Used
 
 - **Express.js** - Web framework for Node.js
 - **MongoDB** - NoSQL database
@@ -25,41 +36,9 @@ This project is a Stationery Shop application built with **Express.js**, **Mongo
 - **TypeScript** - Strongly typed superset of JavaScript
 - **Node.js** - JavaScript runtime for server-side applications
 
-## Project Setup
+---
 
-### Prerequisites
-
-Make sure you have the following installed:
-- **Node.js** (LTS version)
-- **MongoDB** (Running locally or using MongoDB Atlas for cloud)
-
-### Steps to Set Up Locally
-
-1. **Clone the Repository:**
-
-   ```bash
-   git clone https://github.com/Badhon-Roy/Stationery-Shop
-    cd Stationery-Shop
-    ```
-2. **Install Dependencies:**
-
-   ```bash
-   npm install
-    ```
-3. **Set Up MongoDB:**
-- If you're using a local MongoDB instance, make sure MongoDB is running.
-- If you're using MongoDB Atlas, create a cluster and get the connection string.
-- Update your `.env` file with the MongoDB connection string:
-   ```bash
-    MONGO_URI=your-mongodb-connection-uri
-    PORT=5000
-    ```
-4. **Run the Application:**
-
-   ```bash
-   npm run dev
-    ```
- ## Folder Structure: ##
+ ## 📂 Folder Structure: ##
 
 ```
 
@@ -121,5 +100,56 @@ stationery-shop/
 └── tsconfig.json                                   # TypeScript configuration
 
 ```
+
+
+---
+
+## 🚀 Project Setup Getting Started
+
+### Prerequisites
+
+Make sure you have the following installed:
+- **Node.js** (LTS version)
+- **MongoDB** (Running locally or using MongoDB Atlas for cloud)
+
+### Steps to Set Up Locally
+
+1. **Clone the Repository:**
+
+   ```bash
+   git clone https://github.com/Badhon-Roy/Stationery-Shop
+    cd Stationery-Shop
+    ```
+2. **Install Dependencies:**
+
+   ```bash
+   npm install
+    ```
+3. **Set Up MongoDB:**
+- If you're using a local MongoDB instance, make sure MongoDB is running.
+- If you're using MongoDB Atlas, create a cluster and get the connection string.
+- Update your `.env` file with the MongoDB connection string:
+   ```bash
+    MONGO_URI=your-mongodb-connection-uri
+    PORT=5000
+    ```
+4. **Run the Application:**
+
+   ```bash
+   npm run dev
+    ```
+---
+
+## 🧩 API Endpoints: ##
+ **Products**
+- GET `/api/products` - Retrieve all products.
+- POST `/api/products` - Add a new product.
+- PUT `/api/products/:id` - Update a product by ID.
+- DELETE `/api/products/:id` - Delete a product by ID.
+
+ **Orders**
+- GET `/api/orders` - Retrieve all orders.
+- POST `/api/orders` - Place a new order.
+- GET `/api/revenue` - Calculate total revenue.
 
 
