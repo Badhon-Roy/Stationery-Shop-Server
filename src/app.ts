@@ -40,7 +40,7 @@ interface CustomError extends Error {
 }
 
 // Generic Error Handler Middleware
-app.use((error: unknown, req: Request, res: Response, _next: NextFunction) => {
+app.use((error: unknown, req: Request, res: Response, next: NextFunction) => {
   const errorResponse: ErrorResponse = {
     message: 'Validation failed',
     success: false,
@@ -70,7 +70,7 @@ app.use((error: unknown, req: Request, res: Response, _next: NextFunction) => {
   const statusCode = (error as CustomError)?.status || 500;
   res.status(statusCode).json(errorResponse);
 
-  // next();
+  next();
 });
 
 app.get('/', (req: Request, res: Response) => {
