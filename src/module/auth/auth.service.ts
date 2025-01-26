@@ -5,64 +5,78 @@ import AppError from "../../errors/AppError";
 import config from "../../config";
 import { createToken, verifyToken } from "./auth.utils";
 
+type RoleUpdate ={
+  role : string
+}
+
 const loginUser = async (payload: TLoginUser) => {
-    /// checking if the user is exist
-    const user = await User.isUserExistsByCustomEmail(payload?.email);
-    if (!user) {
-        throw new AppError(404, 'This user is not found !');
-    }
+  /// checking if the user is exist
+  const user = await User.isUserExistsByCustomEmail(payload?.email);
+  if (!user) {
+    throw new AppError(404, 'This user is not found !');
+  }
 
-    // checking if the password is correct
-    if (!(await User.isPasswordMatched(payload?.password, user?.password)))
-        throw new AppError(403, 'Password do not matched');
+  // checking if the password is correct
+  if (!(await User.isPasswordMatched(payload?.password, user?.password)))
+    throw new AppError(403, 'Password do not matched');
 
-    const jwtPayload = {
-        email: user?.email,
-        role: user?.role
-    }
+  const jwtPayload = {
+    email: user?.email,
+    role: user?.role
+  }
 
-    const accessToken = createToken(jwtPayload, config.jwt_access_secret as string, config.jwt_access_expires_in as string)
+  const accessToken = createToken(jwtPayload, config.jwt_access_secret as string, config.jwt_access_expires_in as string)
 
-    const refreshToken = createToken(jwtPayload, config.jwt_refresh_secret as string, config.jwt_refresh_expires_in as string)
+  const refreshToken = createToken(jwtPayload, config.jwt_refresh_secret as string, config.jwt_refresh_expires_in as string)
 
-    return {
-        accessToken,
-        refreshToken
-    };
+  return {
+    accessToken,
+    refreshToken
+  };
 }
 
 const refreshToken = async (token: string) => {
-    // checking if the given token is valid
-    const decoded = verifyToken(token, config.jwt_refresh_secret as string);
-  
-    const { email} = decoded;
-  
-    // checking if the user is exist
-    const user = await User.isUserExistsByCustomEmail(email);
-  
-    if (!user) {
-      throw new AppError(404, 'This user is not found !');
-    }
-  
-    const jwtPayload = {
-      email: user?.email,
-      role: user?.role,
-    };
-  
-    const accessToken = createToken(
-        jwtPayload,
-      config.jwt_access_secret as string,
-      config.jwt_access_expires_in as string,
-    );
-  
-    return {
-      accessToken
-    };
+  // checking if the given token is valid
+  const decoded = verifyToken(token, config.jwt_refresh_secret as string);
+
+  const { email } = decoded;
+
+  // checking if the user is exist
+  const user = await User.isUserExistsByCustomEmail(email);
+
+  if (!user) {
+    throw new AppError(404, 'This user is not found !');
+  }
+
+  const jwtPayload = {
+    email: user?.email,
+    role: user?.role,
   };
-  
+
+  const accessToken = createToken(
+    jwtPayload,
+    config.jwt_access_secret as string,
+    config.jwt_access_expires_in as string,
+  );
+
+  return {
+    accessToken
+  };
+};
+
+
+// product update
+const updateRoleFromDB = async (id: string, data : RoleUpdate ) => {
+  const result = await User.findByIdAndUpdate(id, data, {
+    new: true,
+    runValidators : true
+  });
+  return result;
+};
 
 
 export const AuthServices = {
-    loginUser,
-    refreshToken
+  loginUser,
+  refreshToken,
+  updateRoleFromDB
 }
