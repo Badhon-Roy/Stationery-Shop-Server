@@ -1,8 +1,8 @@
 import { Router } from "express";
-import orderRouter from "../module/orders/order.route";
 import { stationeryProductRouter } from "../module/stationery-products/stationeryProduct.route";
 import { userRouter } from "../module/user/user.route";
 import { AuthRouter } from "../module/auth/auth.route";
+import { orderRouter } from "../module/orders/order.route";
 
 
 const router = Router()

@@ -35,7 +35,6 @@ const refreshToken = catchAsync(async (req, res) => {
 const updateRole = catchAsync(async (req, res) => {
     const { userId } = req.params;
     const {role} = req.body;
-    console.log(role);
     const result = await AuthServices.updateRoleFromDB(userId,{role})
 
     res.status(200).json({

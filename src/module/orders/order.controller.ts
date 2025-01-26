@@ -1,13 +1,12 @@
 import { RequestHandler } from 'express';
 import { OrderServices } from './order.service';
 import StationeryProductModel from '../stationery-products/stationeryProduct.model';
+import catchAsync from '../../utils/catchAsync';
 
 // order create
 const createOrder : RequestHandler = async (req, res) => {
   try {
     const { email, product, quantity } = req.body;
-
-    //------------------
     const productDetails = await StationeryProductModel.findById(product);
 
     // check product is available
@@ -28,9 +27,6 @@ const createOrder : RequestHandler = async (req, res) => {
       return;
     }
 
-    // convert id into Object Id
-    // const productId = new mongoose.Types.ObjectId(product);
-
     //calculate total price
     const totalPrice: number = productDetails?.price * quantity;
 
@@ -42,8 +38,6 @@ const createOrder : RequestHandler = async (req, res) => {
       totalPrice,
     };
     const result = await OrderServices.createOrderIntoDB(newOrder);
-
-    //--------------------------------
 
     await OrderServices.updateProductStock(product, quantity);
 
@@ -80,6 +74,63 @@ const getOrder : RequestHandler = async (req, res) => {
   }
 };
 
+
+
+// get specif order
+const getSpecifOrder = catchAsync(async (req, res) => {
+  const { orderId } = req.params;
+  const result =
+    await OrderServices.getSpecifOrderFromDB(orderId);
+  res.status(200).json({
+    message: 'Order retrieved successfully',
+    success: true,
+    data: result,
+  })
+})
+
+// update order
+const updateOrder = catchAsync(async (req, res) => {
+  const { orderId } = req.params;
+  const data = req.body;
+  if (data?.quantity < 0) {
+    res.status(400).json({
+      ...(data.quantity < 0 && {
+        message: `${data?.quantity} is a negative number. Quantity must be a positive number.`,
+      }),
+      success: false,
+      data: {
+        ...(data.quantity < 0 && { quantity: data.quantity }),
+      },
+    });
+  } else {
+    const result = await OrderServices.updateOrderFromDB(
+      orderId,
+      data,
+    );
+    res.status(200).json({
+      message: 'Order updated successfully',
+      success: true,
+      data: result,
+    });
+  }
+})
+
+
+// delete order
+const deleteOrder = catchAsync(async (req, res) => {
+  const { orderId } = req.params;
+  await OrderServices.deleteOrderFromDB(orderId);
+  res.status(200).json({
+    message: 'Order deleted successfully',
+    success: true,
+    data: {},
+  })
+});
+
+
+
+
+
 // Calculate Revenue from Orders
 const calculateRevenue : RequestHandler = async (req, res) => {
   try {
@@ -110,5 +161,8 @@ const calculateRevenue : RequestHandler = async (req, res) => {
 export const OrderControllers = {
   createOrder,
   getOrder,
+  getSpecifOrder,
+  updateOrder,
+  deleteOrder,
   calculateRevenue,
 };

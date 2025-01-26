@@ -14,6 +14,32 @@ const getOrderFromDB = async () => {
   return result;
 };
 
+
+// specif order get
+const getSpecifOrderFromDB = async (id: string) => {
+  const result = await OrderModel.findById(id);
+  return result;
+};
+
+// order update
+const updateOrderFromDB = async (id: string, data: TOrder) => {
+  const result = await OrderModel.findByIdAndUpdate(id, data, {
+    new: true,
+  });
+  return result;
+};
+
+// specif Order delete
+const deleteOrderFromDB = async (id: string) => {
+  const result = await OrderModel.findByIdAndDelete(id);
+  return result;
+};
+
+
+
+
+
+
 //update product stock after an order
 const updateProductStock = async (productId: string, quantity: number) => {
   const product = await StationeryProductModel.findById(productId);
@@ -70,6 +96,9 @@ const calculateRevenueFromAllOrders = async () => {
 
 export const OrderServices = {
   createOrderIntoDB,
+  getSpecifOrderFromDB,
+  updateOrderFromDB,
+  deleteOrderFromDB,
   updateProductStock,
   getOrderFromDB,
   calculateRevenueFromAllOrders,
