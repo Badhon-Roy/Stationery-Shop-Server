@@ -1,21 +1,21 @@
 import { Router } from 'express';
 import { StationeryProductControllers } from './stationeryProduct.controller';
 
-const stationeryProductRouter = Router();
+const router = Router();
 
-stationeryProductRouter.post('/', StationeryProductControllers.createProduct);
-stationeryProductRouter.get(
+router.post('/', StationeryProductControllers.createProduct);
+router.get(
   '/:productId',
   StationeryProductControllers.getSpecifProduct,
 );
-stationeryProductRouter.get('/', StationeryProductControllers.getProduct);
-stationeryProductRouter.put(
+router.get('/', StationeryProductControllers.getProduct);
+router.put(
   '/:productId',
   StationeryProductControllers.updateProduct,
 );
-stationeryProductRouter.delete(
+router.delete(
   '/:productId',
   StationeryProductControllers.deleteProduct,
 );
 
-export default stationeryProductRouter;
+export const stationeryProductRouter = router;

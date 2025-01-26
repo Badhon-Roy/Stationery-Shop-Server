@@ -1,10 +1,8 @@
 import express, { Application, NextFunction, Request, Response } from 'express';
 import cors from 'cors';
-import stationeryProductRouter from './module/stationery-products/stationeryProduct.route';
-
-import orderRouter from './module/orders/order.route';
 import { Error } from 'mongoose';
 import config from './config';
+import router from './routes';
 const app: Application = express();
 
 //  Middleware to parse JSON and handle CORS
@@ -12,8 +10,7 @@ app.use(express.json());
 app.use(cors());
 
 // application related api
-app.use('/api/products', stationeryProductRouter);
-app.use('/api/orders', orderRouter);
+app.use('/api/v1', router);
 
 // Error Interface
 interface ValidationErrorDetails {

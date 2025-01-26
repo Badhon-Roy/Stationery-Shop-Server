@@ -1,9 +1,9 @@
-import { Request, Response } from 'express';
+import { RequestHandler } from 'express';
 import { OrderServices } from './order.service';
 import StationeryProductModel from '../stationery-products/stationeryProduct.model';
 
 // order create
-const createOrder = async (req: Request, res: Response) => {
+const createOrder : RequestHandler = async (req, res) => {
   try {
     const { email, product, quantity } = req.body;
 
@@ -63,7 +63,7 @@ const createOrder = async (req: Request, res: Response) => {
 
 // get all order
 
-const getOrder = async (req: Request, res: Response) => {
+const getOrder : RequestHandler = async (req, res) => {
   try {
     const result = await OrderServices.getOrderFromDB();
     res.status(200).json({
@@ -81,7 +81,7 @@ const getOrder = async (req: Request, res: Response) => {
 };
 
 // Calculate Revenue from Orders
-const calculateRevenue = async (req: Request, res: Response) => {
+const calculateRevenue : RequestHandler = async (req, res) => {
   try {
     const totalRevenue = await OrderServices.calculateRevenueFromAllOrders();
     if (totalRevenue === 0) {

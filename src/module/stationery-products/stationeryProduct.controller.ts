@@ -1,76 +1,23 @@
-import { Request, Response, NextFunction } from 'express';
+import {  RequestHandler } from 'express';
 import { StationeryProductServices } from './stationeryProduct.service';
-// import config from '../../config';
+import catchAsync from '../../utils/catchAsync';
 
-// interface ValidationErrorDetails {
-//   message: string;
-//   name: string;
-//   kind: string;
-//   path: string;
-//   value: unknown;
-// }
 
-// interface ErrorResponse {
-//   message: string;
-//   success: boolean;
-//   error: {
-//     name: string;
-//     errors: Record<string, unknown>;
-//   };
-//   stack?: string | undefined;
-// }
 
-// interface CustomError extends Error {
-//   errors?: Record<string, ValidationErrorDetails>;
-// }
 
 // stationery product create product controller
-const createProduct = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
-  try {
-    const product = req.body;
-    const result = await StationeryProductServices.createProductIntoDB(product);
-    res.status(200).json({
-      message: 'Product created successfully',
-      success: true,
-      data: result,
-    });
-  } catch (error) {
-    next(error);
-    // const errorResponse: ErrorResponse = {
-    //   message: 'Validation failed',
-    //   success: false,
-    //   error: {
-    //     name: 'Validation Error',
-    //     errors: {},
-    //   },
-    // };
-    // if (error instanceof Error) {
-    //   errorResponse.message = 'Validation failed';
-    //   errorResponse.error.name = error.name || 'Error';
-
-    //   if ((error as CustomError).errors) {
-    //     errorResponse.error.errors = (error as CustomError).errors || {};
-    //   }
-
-    //   if (config.node_env === 'development') {
-    //     errorResponse.stack = error.stack;
-    //   }
-    // }
-    // // If the error is not an instance of Error, just return a generic error
-    // else {
-    //   errorResponse.message = 'An unknown error occurred';
-    //   errorResponse.error.name = 'UnknownError';
-    // }
-    // res.status(500).json(errorResponse);
-  }
-};
+const createProduct = catchAsync(async (req, res) => {
+  const product = req.body;
+  const result = await StationeryProductServices.createProductIntoDB(product);
+  res.status(200).json({
+    message: 'Product created successfully',
+    success: true,
+    data: result,
+  })
+})
 
 // get all products
-const getProduct = async (req: Request, res: Response) => {
+const getProduct: RequestHandler = async (req, res) => {
   try {
     const searchTerm = req.query.searchTerm as string | undefined;
     const result = await StationeryProductServices.getProductFromDB(searchTerm);
@@ -89,7 +36,7 @@ const getProduct = async (req: Request, res: Response) => {
 };
 
 // get specif product
-const getSpecifProduct = async (req: Request, res: Response) => {
+const getSpecifProduct: RequestHandler = async (req, res) => {
   try {
     const { productId } = req.params;
     const result =
@@ -109,7 +56,7 @@ const getSpecifProduct = async (req: Request, res: Response) => {
 };
 
 // update product
-const updateProduct = async (req: Request, res: Response) => {
+const updateProduct: RequestHandler = async (req, res) => {
   try {
     const { productId } = req.params;
     const data = req.body;
@@ -148,7 +95,7 @@ const updateProduct = async (req: Request, res: Response) => {
 };
 
 // delete product
-const deleteProduct = async (req: Request, res: Response) => {
+const deleteProduct: RequestHandler = async (req, res) => {
   try {
     const { productId } = req.params;
     await StationeryProductServices.deleteProductFromDB(productId);
