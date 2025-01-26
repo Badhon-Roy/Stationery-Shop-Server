@@ -1,21 +1,21 @@
 import { TUser } from "./user.interface";
-import UserModel from "./user.model";
+import User from "./user.model";
 
 
 // user create into the database
 const createUserIntoDB = async (user: TUser) => {
-    const result = UserModel.create(user);
+    const result = User.create(user);
     return result
 }
 
 // get all user form the database 
 const getAllUserFromDB = async () => {
-    const result = UserModel.find();
+    const result = User.find();
     return result;
 }
 // get single user form the database
 const getSingleUserFromDB = async(id : string) =>{
-    const result = UserModel.findById(id)
+    const result = User.findById(id)
     return result;
 }
 export const UserServices = {
