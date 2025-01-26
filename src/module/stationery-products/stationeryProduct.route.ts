@@ -1,20 +1,29 @@
 import { Router } from 'express';
 import { StationeryProductControllers } from './stationeryProduct.controller';
+import auth from '../../middlewares/auth';
+import { USER_ROLE } from '../user/user.constant';
 
 const router = Router();
 
-router.post('/', StationeryProductControllers.createProduct);
+router.post('/create-product',
+  auth(USER_ROLE.admin),
+  StationeryProductControllers.createProduct);
 router.get(
-  '/:productId',
+  '/get-product/:productId',
+  auth(USER_ROLE.admin, USER_ROLE.user),
   StationeryProductControllers.getSpecifProduct,
 );
-router.get('/', StationeryProductControllers.getProduct);
+router.get('/get-product', 
+  auth(USER_ROLE.admin, USER_ROLE.user),
+  StationeryProductControllers.getProduct);
 router.put(
-  '/:productId',
+  '/update-product/:productId',
+  auth(USER_ROLE.admin),
   StationeryProductControllers.updateProduct,
 );
 router.delete(
-  '/:productId',
+  '/delete-product/:productId',
+  auth(USER_ROLE.admin),
   StationeryProductControllers.deleteProduct,
 );
 

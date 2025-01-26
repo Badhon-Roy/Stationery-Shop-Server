@@ -1,11 +1,13 @@
 import express, { Application, Request, Response } from 'express';
 import cors from 'cors';
 import router from './routes';
+import cookieParser from 'cookie-parser';
 import globalErrorHandler from './middlewares/globalErrorHandler';
 const app: Application = express();
 
 //  Middleware to parse JSON and handle CORS
 app.use(express.json());
+app.use(cookieParser());
 app.use(cors({ origin: ['http://localhost:5173'], credentials: true }));
 
 // application related api
