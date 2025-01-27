@@ -17,15 +17,21 @@ const createProduct = catchAsync(async (req, res) => {
 })
 
 // get all products
-const getProduct = catchAsync(async (req, res) => {
-  const searchTerm = req.query.searchTerm as string | undefined;
-  const result = await StationeryProductServices.getProductFromDB(searchTerm);
+const getAllProducts = catchAsync(async (req, res) => {
+  const result = await StationeryProductServices.getAllProductsFromDB(
+    req.query,
+  );
+
   res.status(200).json({
-    message: 'Products retrieved successfully',
+    message: 'Products are retrieved successfully',
     success: true,
-    data: result,
+    meta: result.meta,
+    data: result.result,
   })
-})
+});
+
+
+
 
 // get specif product
 const getSpecifProduct = catchAsync(async (req, res) => {
@@ -85,7 +91,7 @@ const deleteProduct: RequestHandler = catchAsync(async (req, res) => {
 export const StationeryProductControllers = {
   createProduct,
   getSpecifProduct,
-  getProduct,
+  getAllProducts,
   updateProduct,
   deleteProduct,
 };

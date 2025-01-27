@@ -15,7 +15,7 @@ router.get(
 );
 router.get('/get-product', 
   auth(USER_ROLE.admin, USER_ROLE.user),
-  StationeryProductControllers.getProduct);
+  StationeryProductControllers.getAllProducts);
 router.put(
   '/update-product/:productId',
   auth(USER_ROLE.admin),

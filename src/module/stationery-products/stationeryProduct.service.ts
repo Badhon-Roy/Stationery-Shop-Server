@@ -1,3 +1,5 @@
+import QueryBuilder from '../../builder/QueryBuilder';
+import { ProductSearchableFields } from '../../constant/product.constant';
 import { TStationeryProduct } from './stationeryProduct.interface';
 import StationeryProductModel from './stationeryProduct.model';
 
@@ -8,22 +10,23 @@ const createProductIntoDB = async (product: TStationeryProduct) => {
 };
 
 // all product get
-const getProductFromDB = async (searchTerm: string | undefined) => {
-  const query: Record<string, unknown> = {};
-  if (searchTerm) {
-    Object.assign(query, {
-      $or: [
-        { name: { $regex: searchTerm, $options: 'i' } },
-        { brand: { $regex: searchTerm, $options: 'i' } },
-        { category: { $regex: searchTerm, $options: 'i' } },
-      ],
-    });
-  }
-  const result = await StationeryProductModel.find(query);
-  if (!result.length) {
-    throw new Error('Product not found!');
-  }
-  return result;
+const getAllProductsFromDB = async (
+  query: Record<string, unknown>,
+) => {
+  const academicSemesterQuery = new QueryBuilder(StationeryProductModel.find(), query)
+    .search(ProductSearchableFields)
+    .filter()
+    .sort()
+    .paginate()
+    .fields();
+
+  const result = await academicSemesterQuery.modelQuery;
+  const meta = await academicSemesterQuery.countTotal();
+
+  return {
+    meta,
+    result,
+  };
 };
 
 // specif product get
@@ -47,7 +50,7 @@ const deleteProductFromDB = async (id: string) => {
 };
 export const StationeryProductServices = {
   createProductIntoDB,
-  getProductFromDB,
+  getAllProductsFromDB,
   getSpecifProductFromDB,
   updateProductFromDB,
   deleteProductFromDB,
