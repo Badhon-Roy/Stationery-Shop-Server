@@ -3,6 +3,7 @@ import { stationeryProductRouter } from "../module/stationery-products/stationer
 import { userRouter } from "../module/user/user.route";
 import { AuthRouter } from "../module/auth/auth.route";
 import { orderRouter } from "../module/orders/order.route";
+import { addedCartRouter } from "../module/addedCart/addedCart.route";
 
 
 const router = Router()
@@ -23,7 +24,11 @@ const moduleRoutes = [
     {
         path: '/auth',
         route: AuthRouter
-    }
+    },
+    {
+        path: '/addedCarts',
+        route: addedCartRouter
+    },
 ]
 
 
