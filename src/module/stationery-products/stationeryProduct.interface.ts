@@ -1,6 +1,7 @@
 export type TStationeryProduct = {
   name: string;
   brand: string;
+  image: string;
   price: number;
   category:
     | 'Writing'

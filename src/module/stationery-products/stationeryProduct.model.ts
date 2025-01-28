@@ -13,6 +13,11 @@ const stationeryProductSchema = new Schema<TStationeryProduct>(
       required: [true, 'Brand name is required'],
       trim: true,
     },
+    image: {
+      type: String,
+      required: [true, 'Image is required'],
+      trim: true,
+    },
     price: {
       type: Number,
       required: [true, 'Product price is required'],

@@ -13,16 +13,24 @@ const createUser = catchAsync(async (req, res) => {
   })
 })
 
-const getAllUser = catchAsync(async (req, res) => {
-  const result = await UserServices.getAllUserFromDB();
-  res.status(200).json({
-    message: 'User retrieved successfully',
-    success: true,
-    data: result,
-  })
-})
 
-// get specif product
+// get all user
+const getAllUser = catchAsync(async (req, res) => {
+  const result = await UserServices.getAllUserFromDB(
+    req.query,
+  );
+
+  res.status(200).json({
+    message: 'Users are retrieved successfully',
+    success: true,
+    meta: result.meta,
+    data: result.result,
+  })
+});
+
+
+
+// get specif user
 const getSingleUser = catchAsync(async (req, res) => {
 
   const { userId } = req.params;
@@ -34,8 +42,21 @@ const getSingleUser = catchAsync(async (req, res) => {
   })
 })
 
+
+// delete user
+const deleteUser = catchAsync(async (req, res) => {
+  const { userId } = req.params;
+  await UserServices.deleteUserFromDB(userId);
+  res.status(200).json({
+    message: 'User deleted successfully',
+    success: true,
+    data: {},
+  })
+});
+
 export const UserControllers = {
   createUser,
   getAllUser,
-  getSingleUser
+  getSingleUser,
+  deleteUser
 }
