@@ -13,7 +13,7 @@ const createProductIntoDB = async (product: TStationeryProduct) => {
 const getAllProductsFromDB = async (
   query: Record<string, unknown>,
 ) => {
-  const academicSemesterQuery = new QueryBuilder(StationeryProductModel.find(), query)
+  const academicSemesterQuery = new QueryBuilder(StationeryProductModel.find().populate('category'), query)
     .search(ProductSearchableFields)
     .filter()
     .sort()
@@ -31,7 +31,7 @@ const getAllProductsFromDB = async (
 
 // specif product get
 const getSpecifProductFromDB = async (id: string) => {
-  const result = await StationeryProductModel.findById(id);
+  const result = await StationeryProductModel.findById(id).populate('category');
   return result;
 };
 

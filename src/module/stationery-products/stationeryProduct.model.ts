@@ -24,18 +24,8 @@ const stationeryProductSchema = new Schema<TStationeryProduct>(
       min: [0, 'Price must be a positive number'],
     },
     category: {
-      type: String,
-      enum: {
-        values: [
-          'Writing',
-          'Office Supplies',
-          'Art Supplies',
-          'Educational',
-          'Technology',
-        ],
-        message:
-          '{VALUE} is not a valid category. Allowed categories are: Writing, Office Supplies, Art Supplies, Educational, Technology',
-      },
+      type: Schema.Types.ObjectId,
+      ref: 'Category',
       required: [true, 'Category is required'],
     },
     description: {
