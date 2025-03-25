@@ -1,17 +1,119 @@
+import mongoose from 'mongoose';
+import AppError from '../../errors/AppError';
 import StationeryProductModel from '../stationery-products/stationeryProduct.model';
 import { TOrder } from './order.interface';
 import OrderModel from './order.model';
+import { orderUtils } from './order.utils';
+import QueryBuilder from '../../builder/QueryBuilder';
 
-// order create into the database
-const createOrderIntoDB = async (order: TOrder) => {
-  const result = await OrderModel.create(order);
-  return result;
+const createOrderIntoDB = async (
+  email: string,
+  payload: { products: { product: string; quantity: number }[] },
+  client_ip: string
+) => {
+  if (!payload?.products?.length)
+    throw new AppError(500, "Order is not specified");
+
+  const products = payload.products;
+
+  let totalPrice = 0;
+  const productDetails = await Promise.all(
+    products.map(async (item) => {
+      const product = await StationeryProductModel.findById(item.product);
+      if (product) {
+        const subtotal = product ? (product.price || 0) * item.quantity : 0;
+        totalPrice += subtotal;
+        return item;
+      }
+    })
+  );
+
+  let order = await OrderModel.create({
+    email,
+    products: productDetails,
+    totalPrice,
+  });
+
+  // payment integration
+  const shurjopayPayload = {
+    amount: totalPrice,
+    order_id: order._id,
+    currency: "BDT",
+    customer_name: 'name',
+    customer_address: 'address',
+    customer_email: email,
+    customer_phone: 'phone',
+    customer_city: 'city',
+    client_ip,
+  };
+
+  const payment = await orderUtils.makePaymentAsync(shurjopayPayload);
+  console.log(payment);
+
+  if (payment?.transactionStatus) {
+    order = await order.updateOne({
+      transaction: {
+        id: payment.sp_order_id,
+        transactionStatus: payment.transactionStatus,
+      },
+    });
+  }
+
+  return payment.checkout_url;
 };
 
-// get all order
-const getOrderFromDB = async () => {
-  const result = await OrderModel.find();
-  return result;
+const getOrders = async (
+  query: Record<string, unknown>,
+) => {
+  const orderQuery = new QueryBuilder(OrderModel.find()
+    .populate("products.product"), query)
+    .search(['email'])
+    .filter()
+    .sort()
+    .paginate()
+    .fields();
+
+  const result = await orderQuery.modelQuery;
+  const meta = await orderQuery.countTotal();
+
+  return {
+    meta,
+    result,
+  };
+};
+
+
+
+
+
+const verifyPayment = async (order_id: string) => {
+  const verifiedPayment = await orderUtils.verifyPaymentAsync(order_id);
+
+  if (verifiedPayment.length) {
+    await OrderModel.findOneAndUpdate(
+      {
+        "transaction.id": order_id,
+      },
+      {
+        "transaction.bank_status": verifiedPayment[0].bank_status,
+        "transaction.sp_code": verifiedPayment[0].sp_code,
+        "transaction.sp_message": verifiedPayment[0].sp_message,
+        "transaction.transactionStatus": verifiedPayment[0].transaction_status,
+        "transaction.method": verifiedPayment[0].method,
+        "transaction.date_time": verifiedPayment[0].date_time,
+        status:
+          verifiedPayment[0].bank_status == "Success"
+            ? "Paid"
+            : verifiedPayment[0].bank_status == "Failed"
+            ? "Pending"
+            : verifiedPayment[0].bank_status == "Cancel"
+            ? "Cancelled"
+            : "",
+      }
+    );
+  }
+
+  return verifiedPayment;
 };
 
 
@@ -36,8 +138,24 @@ const deleteOrderFromDB = async (id: string) => {
 };
 
 
-
-
+// update order status 
+const updateOrderStatusFromDB = async (
+  email: string,
+  orderId: mongoose.Types.ObjectId,
+  status: "Pending" | "Shipping"
+): Promise<TOrder | null> => {
+  try {
+    const order = await OrderModel.findOne({ email, _id: orderId });
+    if (!order) {
+      return null;
+    }
+    order.status = status;
+    await order.save();
+    return order;
+  } catch (error) {
+    throw new Error('Error updating order status: ' + error);
+  }
+};
 
 
 //update product stock after an order
@@ -100,6 +218,8 @@ export const OrderServices = {
   updateOrderFromDB,
   deleteOrderFromDB,
   updateProductStock,
-  getOrderFromDB,
+  getOrders,
+  verifyPayment,
+  updateOrderStatusFromDB,
   calculateRevenueFromAllOrders,
 };

@@ -16,18 +16,22 @@ const addedCartSchema = new Schema<TAddedCart>(
             },
             immutable: true,
         },
-        product: [{ type: mongoose.Schema.Types.ObjectId, ref: 'StationeryProducts', required: true }],
-        quantity:
-        {
-            type: Number,
-            required: true,
-            default: 1
-        },
+        products: [
+            {
+                productId: { type: mongoose.Schema.Types.ObjectId, ref: 'StationeryProducts', required: true },
+                quantity: { 
+                    type: Number, 
+                    required: true, 
+                    default: 1,
+                    min: [1, 'Quantity must be at least 1'],
+                    max: [10, 'Quantity maximum 10'],
+                },
+            }
+        ],
     },
-
     {
         timestamps: true,
-    },
+    }
 );
 
 const AddedCartModel = model<TAddedCart>('AddedCart', addedCartSchema);

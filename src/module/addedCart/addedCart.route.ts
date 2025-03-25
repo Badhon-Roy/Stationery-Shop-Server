@@ -5,19 +5,17 @@ const router = Router();
 
 router.post('/add-cart',
     AddedCartControllers.addCart);
-    
+
 router.get('/get-addedCart/:cartId',
      AddedCartControllers.getSingleAddedCart);
 
 router.get('/get-addedCart',
      AddedCartControllers.getAllAddedCarts);
 
-router.put(
-    '/update-addedCart/:cartId',
-    AddedCartControllers.updateAddedCart,
-);
+router.patch("/update-quantity", AddedCartControllers.updateCartQuantity);
+
 router.delete(
-    '/delete-addedCart/:cartId',
+    '/delete-addedCart',
     AddedCartControllers.deleteAddedCart,
 );
 

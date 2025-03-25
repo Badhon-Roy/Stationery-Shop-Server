@@ -1,8 +1,22 @@
-import mongoose from 'mongoose';
+import { Document, Types } from "mongoose";
 
-export type TOrder = {
+export interface TOrder extends Document {
   email: string;
-  product: mongoose.Types.ObjectId;
-  quantity: number;
+  products: {
+    product: Types.ObjectId;
+    quantity: number;
+  }[];
   totalPrice: number;
-};
+  status: "Pending" | "Paid" | "Shipping" | "Completed" | "Cancelled";
+  transaction: {
+    id: string;
+    transactionStatus: string;
+    bank_status: string;
+    sp_code: string;
+    sp_message: string;
+    method: string;
+    date_time: string;
+  };
+  createdAt?: Date;
+  updatedAt?: Date;
+}

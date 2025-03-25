@@ -1,80 +1,42 @@
 import { RequestHandler } from 'express';
 import { OrderServices } from './order.service';
-import StationeryProductModel from '../stationery-products/stationeryProduct.model';
 import catchAsync from '../../utils/catchAsync';
 
 // order create
-const createOrder : RequestHandler = async (req, res) => {
-  try {
-    const { email, product, quantity } = req.body;
-    const productDetails = await StationeryProductModel.findById(product);
+// Create a new order
+const createOrder = catchAsync(async (req, res) => {
+  const { email } = req.body;
+  const order = await OrderServices.createOrderIntoDB(email, req.body, req.ip!);
 
-    // check product is available
-    if (!productDetails) {
-      res.status(404).json({
-        message: 'Product not found.',
-        status: false,
-      });
-      return;
-    }
+  res.status(200).json({
+    message: 'Order placed successfully',
+    success: true,
+    data: order,
+  })
+})
 
-    //check the requested quantity is available
-    if (productDetails.quantity < quantity) {
-      res.status(400).json({
-        message: 'Insufficient stock available.',
-        status: false,
-      });
-      return;
-    }
+const getOrders = catchAsync(async (req, res) => {
+  const result = await OrderServices.getOrders(
+    req.query,
+  );
 
-    //calculate total price
-    const totalPrice: number = productDetails?.price * quantity;
+  res.status(200).json({
+    message: 'Orders are retrieved successfully',
+    success: true,
+    meta: result.meta,
+    data: result.result,
+  })
+})
 
-    // create the order
-    const newOrder = {
-      email,
-      product,
-      quantity,
-      totalPrice,
-    };
-    const result = await OrderServices.createOrderIntoDB(newOrder);
+const verifyPayment = catchAsync(async (req, res) => {
+  const order = await OrderServices.verifyPayment(req.query.order_id as string);
 
-    await OrderServices.updateProductStock(product, quantity);
-
-    res.status(200).json({
-      message: 'Order created successfully',
-      status: true,
-      data: result,
-    });
-  } catch (error) {
-    res.status(500).json({
-      message: 'Something went wrong',
-      status: false,
-      error,
-    });
-  }
-};
-
-// get all order
-
-const getOrder : RequestHandler = async (req, res) => {
-  try {
-    const result = await OrderServices.getOrderFromDB();
-    res.status(200).json({
-      message: 'Order retrieved successfully',
-      status: true,
-      data: result,
-    });
-  } catch (error) {
-    res.status(500).json({
-      message: 'Something went wrong',
-      status: false,
-      error,
-    });
-  }
-};
-
-
+  res.status(200).json({
+    message: 'Order verify successfully',
+    success: true,
+    data: order,
+  });
+});
 
 // get specif order
 const getSpecifOrder = catchAsync(async (req, res) => {
@@ -87,6 +49,29 @@ const getSpecifOrder = catchAsync(async (req, res) => {
     data: result,
   })
 })
+
+// update status
+const updateOrderStatus = catchAsync(async (req, res) => {
+  const { status, email, orderId } = req.body;
+  if (!status || !email || !orderId) {
+    res.status(400).json({
+      message: 'Status, email, and orderId are required.',
+      success: false,
+    });
+    return
+  }
+
+  // Call the service to update the order status
+  const result = await OrderServices.updateOrderStatusFromDB(email, orderId, status);
+
+  res.status(200).json({
+    message: 'Order status updated successfully!',
+    success: true,
+    data: result
+  })
+});
+
+
 
 // update order
 const updateOrder = catchAsync(async (req, res) => {
@@ -132,7 +117,7 @@ const deleteOrder = catchAsync(async (req, res) => {
 
 
 // Calculate Revenue from Orders
-const calculateRevenue : RequestHandler = async (req, res) => {
+const calculateRevenue: RequestHandler = async (req, res) => {
   try {
     const totalRevenue = await OrderServices.calculateRevenueFromAllOrders();
     if (totalRevenue === 0) {
@@ -160,9 +145,11 @@ const calculateRevenue : RequestHandler = async (req, res) => {
 
 export const OrderControllers = {
   createOrder,
-  getOrder,
+  getOrders,
   getSpecifOrder,
   updateOrder,
   deleteOrder,
   calculateRevenue,
+  updateOrderStatus,
+  verifyPayment
 };

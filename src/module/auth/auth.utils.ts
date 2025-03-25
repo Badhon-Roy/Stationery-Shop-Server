@@ -1,14 +1,26 @@
-import jwt, { JwtPayload } from 'jsonwebtoken'
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import jwt, { JwtPayload, SignOptions } from 'jsonwebtoken';
 
-export const createToken = (
-    jwtPayload: { email: string, role: string },
-    secret: string,
-    expiresIn: string
-) => {
-    return jwt.sign(jwtPayload, secret, {
-        expiresIn,
-    });
+// Define the payload interface
+interface Payload {
+    email: string;
+    role: string;
 }
-export const verifyToken = (token: string, secret: string) => {
+
+// Function to create a token
+export const createToken = (
+    jwtPayload: Payload,
+    secret: string,
+    expiresIn: any
+): string => {
+    const options: SignOptions = {
+        expiresIn, // 'expiresIn' should be either a string or number.
+    };
+
+    return jwt.sign(jwtPayload, secret, options);
+};
+
+// Function to verify the token
+export const verifyToken = (token: string, secret: string): JwtPayload => {
     return jwt.verify(token, secret) as JwtPayload;
 };

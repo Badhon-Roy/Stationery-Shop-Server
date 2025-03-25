@@ -10,11 +10,9 @@ router.post('/create-product',
   StationeryProductControllers.createProduct);
 router.get(
   '/get-product/:productId',
-  auth(USER_ROLE.admin, USER_ROLE.user),
   StationeryProductControllers.getSpecifProduct,
 );
 router.get('/get-product', 
-  auth(USER_ROLE.admin, USER_ROLE.user),
   StationeryProductControllers.getAllProducts);
 router.put(
   '/update-product/:productId',
