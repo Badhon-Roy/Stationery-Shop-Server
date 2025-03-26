@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import QueryBuilder from '../../builder/QueryBuilder';
 import { ProductSearchableFields } from '../../constant/product.constant';
 import { TStationeryProduct } from './stationeryProduct.interface';
@@ -10,24 +11,39 @@ const createProductIntoDB = async (product: TStationeryProduct) => {
 };
 
 // all product get
-const getAllProductsFromDB = async (
-  query: Record<string, unknown>,
-) => {
-  const academicSemesterQuery = new QueryBuilder(StationeryProductModel.find().populate('category'), query)
+//* get all listing product
+const getAllProductsFromDB = async (query: Record<string, unknown>) => {
+  const { minPrice, maxPrice, categories, ...pQuery } =
+    query;
+
+  const filter: Record<string, any> = {};
+  const parseArrayQuery = (param: unknown): string[] => {
+    if (!param) return [];
+    if (typeof param === 'string') return param.split(',');
+    if (Array.isArray(param)) return param;
+    return [param.toString()];
+  };
+  const categoryArray = parseArrayQuery(categories);
+  if (categoryArray.length) filter.category = { $in: categoryArray };
+  const listingQuery = new QueryBuilder(
+    StationeryProductModel.find(filter).populate('category'),
+    pQuery,
+  )
     .search(ProductSearchableFields)
     .filter()
     .sort()
     .paginate()
-    .fields();
+    .fields()
+    .priceRange(Number(minPrice) || 0, Number(maxPrice) || Infinity);
 
-  const result = await academicSemesterQuery.modelQuery;
-  const meta = await academicSemesterQuery.countTotal();
+  const result = await listingQuery.modelQuery.lean();
+  console.log(result);
+  const meta = await listingQuery.countTotal();
 
-  return {
-    meta,
-    result,
-  };
+  return { result, meta };
 };
+
+
 
 // specif product get
 const getSpecifProductFromDB = async (id: string) => {

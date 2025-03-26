@@ -2,12 +2,11 @@ import { RequestHandler } from 'express';
 import { OrderServices } from './order.service';
 import catchAsync from '../../utils/catchAsync';
 
-// order create
 // Create a new order
 const createOrder = catchAsync(async (req, res) => {
   const { email } = req.body;
   const order = await OrderServices.createOrderIntoDB(email, req.body, req.ip!);
-
+  console.log(order);
   res.status(200).json({
     message: 'Order placed successfully',
     success: true,

@@ -3,6 +3,13 @@ import { TOrder } from './order.interface';
 
 const orderSchema = new Schema<TOrder>(
   {
+    city: { type: String, required: true },
+    contactNo: { type: String, required: true },
+    division: { type: String, required: true },
+    localAddress: { type: String, required: true },
+    name: { type: String, required: true },
+    postCode: { type: String, required: true },
+    upozila: { type: String, required: true },
     email: { type: String, required: true },
     products: [
       {

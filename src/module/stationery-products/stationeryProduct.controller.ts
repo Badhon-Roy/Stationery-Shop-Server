@@ -18,10 +18,7 @@ const createProduct = catchAsync(async (req, res) => {
 
 // get all products
 const getAllProducts = catchAsync(async (req, res) => {
-  const result = await StationeryProductServices.getAllProductsFromDB(
-    req.query,
-  );
-
+  const result = await StationeryProductServices.getAllProductsFromDB(req.query);
   res.status(200).json({
     message: 'Products are retrieved successfully',
     success: true,

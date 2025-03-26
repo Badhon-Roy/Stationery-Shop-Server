@@ -45,7 +45,7 @@ class QueryBuilder<T> {
   }
 
   paginate() {
-    const page = Number(this?.query?.page) || 1;
+    const page = Number(this?.query?.page);
     const limit = Number(this?.query?.limit);
     const skip = (page - 1) * limit;
 
@@ -64,7 +64,7 @@ class QueryBuilder<T> {
   async countTotal() {
     const totalQueries = this.modelQuery.getFilter();
     const total = await this.modelQuery.model.countDocuments(totalQueries);
-    const page = Number(this?.query?.page) || 1;
+    const page = Number(this?.query?.page);
     const limit = Number(this?.query?.limit);
     const totalPage = Math.ceil(total / limit);
 
@@ -74,6 +74,20 @@ class QueryBuilder<T> {
       total,
       totalPage,
     };
+  }
+
+  priceRange(minPrice?: number, maxPrice?: number) {
+    const priceFilter: Record<string, unknown> = {};
+    if (minPrice !== undefined) priceFilter.$gte = minPrice;
+    if (maxPrice !== undefined) priceFilter.$lte = maxPrice;
+
+    if (minPrice !== undefined || maxPrice !== undefined) {
+      this.modelQuery = this.modelQuery.find({
+        price: priceFilter,
+      } as FilterQuery<T>);
+    }
+
+    return this;
   }
 }
 

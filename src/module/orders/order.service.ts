@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import mongoose from 'mongoose';
 import AppError from '../../errors/AppError';
 import StationeryProductModel from '../stationery-products/stationeryProduct.model';
@@ -8,7 +9,7 @@ import QueryBuilder from '../../builder/QueryBuilder';
 
 const createOrderIntoDB = async (
   email: string,
-  payload: { products: { product: string; quantity: number }[] },
+  payload: any,
   client_ip: string
 ) => {
   if (!payload?.products?.length)
@@ -18,9 +19,10 @@ const createOrderIntoDB = async (
 
   let totalPrice = 0;
   const productDetails = await Promise.all(
-    products.map(async (item) => {
+    products.map(async (item : any) => {
       const product = await StationeryProductModel.findById(item.product);
       if (product) {
+        console.log(product?.quantity);
         const subtotal = product ? (product.price || 0) * item.quantity : 0;
         totalPrice += subtotal;
         return item;
@@ -32,6 +34,13 @@ const createOrderIntoDB = async (
     email,
     products: productDetails,
     totalPrice,
+    name: payload?.name || '',
+    contactNo: payload?.contactNo || '',
+    division: payload?.division || '',
+    city: payload?.city || '',
+    upozila: payload?.upozila || '',
+    localAddress: payload?.localAddress || '',
+    postCode: payload?.postCode || ''
   });
 
   // payment integration
@@ -39,16 +48,15 @@ const createOrderIntoDB = async (
     amount: totalPrice,
     order_id: order._id,
     currency: "BDT",
-    customer_name: 'name',
-    customer_address: 'address',
+    customer_name: payload?.name || '',
+    customer_address: payload?.localAddress || '',
     customer_email: email,
-    customer_phone: 'phone',
-    customer_city: 'city',
+    customer_phone: payload?.contactNo || '',
+    customer_city: payload?.city || '',
     client_ip,
   };
 
   const payment = await orderUtils.makePaymentAsync(shurjopayPayload);
-  console.log(payment);
 
   if (payment?.transactionStatus) {
     order = await order.updateOne({
@@ -58,6 +66,19 @@ const createOrderIntoDB = async (
       },
     });
   }
+
+
+   await Promise.all(
+    products.map(async (item: any) => {
+      await StationeryProductModel.findByIdAndUpdate(
+        item.product,
+        { $inc: { quantity: -item.quantity } },
+        { new: true }
+      );
+    })
+  );
+
+
 
   return payment.checkout_url;
 };
@@ -105,10 +126,10 @@ const verifyPayment = async (order_id: string) => {
           verifiedPayment[0].bank_status == "Success"
             ? "Paid"
             : verifiedPayment[0].bank_status == "Failed"
-            ? "Pending"
-            : verifiedPayment[0].bank_status == "Cancel"
-            ? "Cancelled"
-            : "",
+              ? "Pending"
+              : verifiedPayment[0].bank_status == "Cancel"
+                ? "Cancelled"
+                : "",
       }
     );
   }

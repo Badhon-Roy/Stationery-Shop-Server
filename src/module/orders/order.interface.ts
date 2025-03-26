@@ -1,6 +1,13 @@
 import { Document, Types } from "mongoose";
 
 export interface TOrder extends Document {
+  city: string;
+  contactNo: string;
+  division: string;
+  localAddress: string;
+  name: string;
+  postCode: string;
+  upozila: string;
   email: string;
   products: {
     product: Types.ObjectId;

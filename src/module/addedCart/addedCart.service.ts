@@ -1,5 +1,6 @@
 
 import QueryBuilder from '../../builder/QueryBuilder';
+import StationeryProductModel from '../stationery-products/stationeryProduct.model';
 import { TAddedCart } from './addedCart.interface';
 import AddedCartModel from './addedCart.model';
 
@@ -41,24 +42,47 @@ const getSingleAddedCartFromDB = async (id: string) => {
 
 const updateProductQuantity = async (email : string, productId : string, change: number  ) => {
   const cart = await AddedCartModel.findOne({ email });
+  const product = await StationeryProductModel.findOne({_id : productId})
+
 
   if (!cart) {
       throw new Error("Cart not found");
   }
+  if (!product) {
+    throw new Error("Product not found");
+  }
+
+  if (change > 0 && product.quantity === 0) {
+    throw new Error("Product is out of stock");
+  }
 
   let productExists = false;
 
-  cart.products = cart.products.map((product) => {
-      if (product.productId.toString() === productId) {
-          product.quantity = Math.max(1, product.quantity + change); // Prevents going below 1
-          productExists = true;
+  cart.products = cart.products.map((cartItem) => {
+    if (cartItem.productId.toString() === productId) {
+      const newCartQuantity = Math.max(1, cartItem.quantity + change); // Prevents going below 1
+
+      // Ensure we don't add more than available stock
+      if (newCartQuantity > product.quantity) {
+        throw new Error("Not enough stock available");
       }
-      return product;
+
+      cartItem.quantity = newCartQuantity;
+      productExists = true;
+    }
+    return cartItem;
   });
 
   if (!productExists) {
-      throw new Error("Product not found in cart");
+    throw new Error("Product not found in cart");
   }
+
+
+  await StationeryProductModel.findByIdAndUpdate(
+    productId,
+    { $inc: { quantity: - change } },
+    { new: true }
+  );
 
   await cart.save();
   return cart;
