@@ -6,7 +6,6 @@ import catchAsync from '../../utils/catchAsync';
 const createOrder = catchAsync(async (req, res) => {
   const { email } = req.body;
   const order = await OrderServices.createOrderIntoDB(email, req.body, req.ip!);
-  console.log(order);
   res.status(200).json({
     message: 'Order placed successfully',
     success: true,

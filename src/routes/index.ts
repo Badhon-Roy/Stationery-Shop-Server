@@ -6,6 +6,7 @@ import { orderRouter } from "../module/orders/order.route";
 import { addedCartRouter } from "../module/addedCart/addedCart.route";
 import { categoryRouter } from "../module/category/category.route";
 import { favoriteRouter } from "../module/addedFavorite/addedFavorite.route";
+import { blogsRouter } from "../module/blog/blog.route";
 
 
 const router = Router()
@@ -38,6 +39,10 @@ const moduleRoutes = [
     {
         path: '/categories',
         route: categoryRouter
+    },
+    {
+        path: '/blogs',
+        route: blogsRouter
     },
 ]
 

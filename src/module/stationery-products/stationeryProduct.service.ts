@@ -13,7 +13,7 @@ const createProductIntoDB = async (product: TStationeryProduct) => {
 // all product get
 //* get all listing product
 const getAllProductsFromDB = async (query: Record<string, unknown>) => {
-  const { minPrice, maxPrice, categories, ...pQuery } =
+  const { minPrice, maxPrice, categories, brands, ...pQuery } =
     query;
 
   const filter: Record<string, any> = {};
@@ -25,6 +25,8 @@ const getAllProductsFromDB = async (query: Record<string, unknown>) => {
   };
   const categoryArray = parseArrayQuery(categories);
   if (categoryArray.length) filter.category = { $in: categoryArray };
+  const brandArray = parseArrayQuery(brands);
+  if (brandArray.length) filter.brand = { $in: brandArray };
   const listingQuery = new QueryBuilder(
     StationeryProductModel.find(filter).populate('category'),
     pQuery,
@@ -37,7 +39,6 @@ const getAllProductsFromDB = async (query: Record<string, unknown>) => {
     .priceRange(Number(minPrice) || 0, Number(maxPrice) || Infinity);
 
   const result = await listingQuery.modelQuery.lean();
-  console.log(result);
   const meta = await listingQuery.countTotal();
 
   return { result, meta };
