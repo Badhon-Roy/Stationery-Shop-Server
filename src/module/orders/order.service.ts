@@ -22,7 +22,6 @@ const createOrderIntoDB = async (
     products.map(async (item : any) => {
       const product = await StationeryProductModel.findById(item.product);
       if (product) {
-        console.log(product?.quantity);
         const subtotal = product ? (product.price || 0) * item.quantity : 0;
         totalPrice += subtotal;
         return item;
